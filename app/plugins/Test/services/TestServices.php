@@ -75,7 +75,7 @@ class TestServices
      * @param $param array  查询参数
      * @param $user array 用户
      * @param bool $buildPower 是否构建数据权限
-     * @return array
+     * @return array|object
      * @throws \think\db\exception\DbException
      */
     public function lists($param, $user = [], $buildPower = true)
@@ -96,13 +96,11 @@ class TestServices
         //}
 
         // 执行查询并分页
-        $list = $query->paginate($param['limit'] ?? $param['page_size'] ?? $param['pageSize'] ?? 20, false)->each(function ($item) {
+        return $query->paginate($param['limit'] ?? $param['page_size'] ?? $param['pageSize'] ?? 20, false)->each(function ($item) {
             //没走模型，所以处理下时间戳
             //$item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
             return $item;
         });
-
-        return ['list' => $list->items(), 'total' => $list->total()];
     }
 
     /**
@@ -112,9 +110,8 @@ class TestServices
      * @param $buildPower
      * @return array
      */
-    public function listsByDao($params = [] , $user = [] , $buildPower = true ){
-        $list = $this->dao->lists($params , $user , $buildPower , $params['sort'] ?? ['id' => 'desc']);
-        return ['list' => $list->items() ?? [], 'total' => $list->total() ?? 0 ];
+    public function listsByDao($params = [] , $user = [] , $buildPower = true , $sort = ['id' => 'desc']){
+        return $this->dao->lists($params , $user , $buildPower ,  $sort);
     }
 
 
